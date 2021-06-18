@@ -1,0 +1,113 @@
+
+<!---------------------
+    1 - CREAR PAGINA FAQ EN LIQUID
+    2 - CREAR SECCION EN SECTIONS
+    3 - ASIGNAR LA PLANTILLA FAQ A LA PAGINA CREADA EN EL FRONT DE SHOPIFY
+    4 - CARGAR LA INFO QUE SE DESEE DESDE EL EDITOR DE BLOQUES DE SHOPIFY 
+-------------------------->
+
+<!---------- SCHEMA JSON --------->
+  <!------
+    {% schema %}
+
+  {
+    "name": "FAQ -Section",
+    "settings": [],
+    "blocks":[
+		{
+			"type":"text",
+			"name": "Preguntas/Respuestas",
+			"settings":[
+					{
+						"id":"pregunta",
+						"type":"text",
+						"label":"la pregunta"
+					},
+					{
+						"id":"respuesta",
+						"type":"richtext",
+						"label":"la respuesta"
+					}
+			]
+		}		
+		]
+      }
+
+{% endschema %}
+    
+    ----->
+<html>
+<body>
+<!---------SECTION FAQ LIQUID--------------------->
+  <div class="faq">
+    {% for block in section.blocks%}
+            
+      <div class="tab">
+          <input type="checkbox" id="tab{{forloop.index}}" class="tab-toggle">
+          <label for="tab{{forloop.index}}" class="tab-label">{{block.settings.pregunta}}</label>
+          <div class="tab-content">{{block.settings.respuesta}}</div>
+      </div>
+    
+    {%endfor%}
+ </div>
+<!---------- HEADER HTML en header.liquid--------->
+<div class="page-width">
+    <div class="grid">
+      <div class="grid__item medium-up--five-sixths medium-up--push-one-twelfth">
+        <div class="section-header text-center">
+          <h1>{{ page.title }}</h1>
+        </div>
+            <div class="rte">
+              {{ page.content }}
+             </div>
+          {% section 'faq'%}
+      </div>
+    </div>
+  </div>
+  
+<!---- CSS EN ESTILOS DEL THEME / CUSTOMIZABLE---->
+    <style>
+        .faq{
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .faq .tab-toggle{
+            display: none;
+        }
+        .faq .tab-label{
+            background-color: rgb(8, 74, 117);
+            display:flex;
+            justify-content: space-between;
+            padding:1em;
+            font-weight: bold;
+            color: #fff;
+        }
+        .faq .tab-label:hover{
+            background-color: rgb(7, 60, 95);
+        }
+        .faq .tab-label::after{
+            content:'\276F';
+            transition: all 0.4s;
+        }
+        .faq .tab-toggle:checked ~ .tab-label::after{
+            transform: rotate(90deg);
+        }
+        .faq .tab-toggle:checked ~ .tab-label{
+            background-color: rgb(8, 74, 117);
+        }
+        .faq .tab-content{
+            background-color: rgb(255, 255, 255);
+            max-height: 0px;
+            overflow: hidden;
+            transition: all 0.4s;
+            padding: 0 1em;
+        }
+        .faq .tab-toggle:checked ~ .tab-content{
+            max-height: 100vh;
+            padding: 1em;
+        }
+
+    </style>
+
+</body>
+</html>

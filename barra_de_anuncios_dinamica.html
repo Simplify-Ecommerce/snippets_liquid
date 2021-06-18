@@ -1,0 +1,106 @@
+  	
+<!---------- HEADER HTML en header.liquid--------->
+    <body>
+
+    {%comment%} AGREGANDO SHIPPING BAR CUSTOM {%endcomment%}
+  		
+  		{% if section.settings.is_free_shipping_bar %}
+  
+  			{% assign promote_txt = section.settings.promote_free_shipping_txt | escape %}
+  			{% assign unlocked_txt = section.settings.unlocked_free_shipping_txt | escape %}
+  			{% assign treshold = section.settings.free_shipping_treshold | times: 100 %}
+  
+  			{% assign value_left = treshold | minus:cart.total_price %}
+  			{% assign value_left_money = value_left | money %}
+  
+  			<div class="announcement-bar" role="region" aria-label="{{ 'sections.header.announcement_bar_label' | t }} data-promote="{{promote_txt}}" data-unlocked="{{unlocked_txt}}" data-treshold="{{treshold}}">
+              {% if value_left <= 0 %}
+              <p class="announcement-bar__message">{{unlocked_txt}}</p>
+              {%else%}
+              <p class="announcement-bar__message">{{promote_txt | replace:'[value]' ,value_left_money}}</p>
+              {%endif%}
+  			</div>
+
+    </body>
+  <!---------- SCHEMA JSON --------->
+
+  <!-----
+    
+      	{
+		"type": "checkbox",
+		"label": "enable free shipping bar",
+		"id": "is_free_shipping_bar",
+		"default": false
+
+	},
+	{
+		"type": "text",
+		"id": "promote_free_shipping_txt",
+		"label":"mensaje para promover free shipping"
+	
+	},
+	{
+		"type": "text",
+		"id": "unlocked_free_shipping_txt",
+		"label":"mensaje para desbloquear free shipping"
+	
+	},
+	{
+		"type":"range",
+		"id": "free_shipping_treshold",
+		"label": "umbral de envios gratis",
+		"min":0,
+		"max":200,
+		"step":5,
+		"unit":"USD",
+		"default":50
+	}
+  ]
+    
+    ----->
+
+
+  <!----------JAVASCRIPT en theme.js---------->
+  <!---
+    En las funciones ADDITEM-REMOVEITEM-UPDATEITEM
+
+    Hay que agregar esto, antes de los mensajes de error .catch
+    theme.ShippingBar.update();
+    --En el debut nuevo, me arroja errores estas 3 actualizaciones en la parte del carrito, ojo, funciona pero hay un tema
+    con el mensaje de error, debe ser que estoy localizando mal el espacio.
+    ---->
+  <script>
+
+    theme.ShippingBar = (function() {
+    
+    var bar = document.querySelector('.announcement-bar');
+    var promote_txt = bar.dataset.promote;
+    var unlocked_txt = bar.dataset.unlocked;
+    var treshold = bar.dataset.treshold;
+    
+    function update() 
+    {
+        $.getJSON('/cart.js').then(
+        
+        function(cart) {
+            
+            var value_left = treshold - cart.total_price;
+            var value_left_money = theme.Currency.formatMoney(value_left,theme.moneyFormat);
+            
+            if(value_left <= 0) {
+                bar.innerHTML = '<p class="announcement-bar__message">' + unlocked_txt + '</p>';
+            }
+            else{
+                bar.innerHTML = '<p class="announcement-bar__message">' + promote_txt.replace('[value]',value_left_money) + '</p>';
+                }
+        }
+        
+        );
+    }
+
+    return { update:update }
+
+    }) ();
+
+  </script>
+
