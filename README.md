@@ -1,2 +1,2 @@
 # snippets_liquid
-Repositorio de fragmentos de código, plantillas o soluciones 
+👉 Este es un repositorio de fragmentos de código, plantillas o soluciones para Simplify y Tasky
